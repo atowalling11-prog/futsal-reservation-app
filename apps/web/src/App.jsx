@@ -1,16 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const API_URL = 'http://localhost:5000/api';
+
+const initialForm = {
+  courtId: '1',
+  playerName: '',
+  date: '2026-10-06',
+  slot: '18:00'
+};
 
 export default function App() {
   const [courts, setCourts] = useState([]);
   const [bookings, setBookings] = useState([]);
-  const [form, setForm] = useState({
-    courtId: '1',
-    playerName: '',
-    date: '2026-10-06',
-    slot: '18:00'
-  });
+  const [form, setForm] = useState(initialForm);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     fetch(`${API_URL}/courts`)
@@ -24,6 +27,11 @@ export default function App() {
       .catch((err) => console.error('Failed to load bookings', err));
   }, []);
 
+  const selectedCourt = useMemo(
+    () => courts.find((court) => Number(court.id) === Number(form.courtId)) || courts[0],
+    [courts, form.courtId]
+  );
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -31,54 +39,71 @@ export default function App() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setMessage('');
 
     const response = await fetch(`${API_URL}/bookings`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form)
+      body: JSON.stringify({ ...form, courtId: Number(form.courtId) })
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      alert(data.error || 'Booking failed');
+      setMessage(data.error || 'Booking failed');
       return;
     }
 
-    setBookings((prev) => [...prev, data]);
-    alert('Booking successful');
+    setBookings((prev) => [data, ...prev]);
+    setForm({ ...initialForm, courtId: form.courtId });
+    setMessage(`Booking confirmed for ${data.courtName} at ${data.slot}`);
   };
 
   return (
     <div className="app-shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">FUTSAL</p>
-          <h1>Reservation Hub</h1>
+          <p className="eyebrow">BOOK A COURT</p>
+          <h1>Futsal Reservation</h1>
         </div>
+        <div className="stat-pill">{bookings.length} upcoming</div>
       </header>
 
       <main className="content-grid">
         <section className="panel">
-          <h2>Available Courts</h2>
+          <div className="panel-header">
+            <h2>Available Courts</h2>
+            <span>{courts.length} courts</span>
+          </div>
+
           <div className="court-list">
             {courts.map((court) => (
               <article key={court.id} className="court-card">
                 <div>
-                  <strong>{court.name}</strong>
-                  <p>{court.type}</p>
+                  <div className="court-title-row">
+                    <strong>{court.name}</strong>
+                    <span className="tag">{court.type}</span>
+                  </div>
+                  <p>{court.location}</p>
+                  <small>{court.slots.join(' • ')}</small>
                 </div>
                 <div className="court-meta">
-                  <span>From $ {court.price}</span>
-                  <small>{court.slots.join(' • ')}</small>
+                  <span>${court.price}</span>
+                  <button type="button" onClick={() => setForm((prev) => ({ ...prev, courtId: String(court.id) }))}>
+                    Select
+                  </button>
                 </div>
               </article>
             ))}
           </div>
         </section>
 
-        <section className="panel">
-          <h2>Book a Court</h2>
+        <section className="panel booking-panel">
+          <div className="panel-header">
+            <h2>Reserve a slot</h2>
+            <span>{selectedCourt ? selectedCourt.name : 'Court'}</span>
+          </div>
+
           <form onSubmit={handleSubmit} className="booking-form">
             <label>
               Court
@@ -95,50 +120,46 @@ export default function App() {
                 name="playerName"
                 value={form.playerName}
                 onChange={handleChange}
-                placeholder="Enter name"
+                placeholder="Enter your name"
               />
             </label>
 
             <label>
               Date
-              <input
-                type="date"
-                name="date"
-                value={form.date}
-                onChange={handleChange}
-              />
+              <input type="date" name="date" value={form.date} onChange={handleChange} />
             </label>
 
             <label>
-              Slot
+              Preferred time
               <select name="slot" value={form.slot} onChange={handleChange}>
-                <option value="09:00">09:00</option>
-                <option value="10:00">10:00</option>
-                <option value="11:00">11:00</option>
-                <option value="12:00">12:00</option>
-                <option value="13:00">13:00</option>
-                <option value="14:00">14:00</option>
-                <option value="17:00">17:00</option>
-                <option value="18:00">18:00</option>
-                <option value="19:00">19:00</option>
-                <option value="20:00">20:00</option>
+                {selectedCourt?.slots?.map((slot) => (
+                  <option key={slot} value={slot}>{slot}</option>
+                )) || <option value="18:00">18:00</option>}
               </select>
             </label>
 
-            <button type="submit">Confirm Booking</button>
+            <button type="submit" className="primary-btn">Confirm booking</button>
+            {message ? <p className="message">{message}</p> : null}
           </form>
         </section>
       </main>
 
       <section className="panel lower-panel">
-        <h2>Bookings</h2>
+        <div className="panel-header">
+          <h2>Recent bookings</h2>
+          <span>Live snapshot</span>
+        </div>
+
         <ul className="booking-list">
           {bookings.map((booking) => (
             <li key={booking.id}>
               <span>{booking.playerName}</span>
-              <span>{booking.courtName || `Court ${booking.courtId}`}</span>
+              <span>{booking.courtName}</span>
               <span>{booking.date}</span>
               <span>{booking.slot}</span>
+              <span className={booking.status === 'confirmed' ? 'status confirmed' : 'status pending'}>
+                {booking.status}
+              </span>
             </li>
           ))}
         </ul>

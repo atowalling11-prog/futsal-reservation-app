@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const { courts, bookings } = require('./data');
 require('dotenv').config();
 
 const app = express();
@@ -8,26 +9,36 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const courts = [
-  { id: 1, name: 'Court A', type: 'Indoor', price: 120, slots: ['10:00', '11:00', '12:00', '18:00'] },
-  { id: 2, name: 'Court B', type: 'Indoor', price: 140, slots: ['09:00', '10:00', '14:00', '19:00'] },
-  { id: 3, name: 'Court C', type: 'Outdoor', price: 160, slots: ['08:00', '13:00', '17:00', '20:00'] }
-];
-
-const bookings = [
-  { id: 1, courtId: 1, playerName: 'Aisha', date: '2026-10-05', slot: '18:00' }
-];
-
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Futsal API is running' });
+  res.json({ status: 'ok', message: 'Futsal API is running', timestamp: new Date().toISOString() });
 });
 
 app.get('/api/courts', (req, res) => {
   res.json(courts);
 });
 
+app.get('/api/courts/:id', (req, res) => {
+  const court = courts.find((item) => item.id === Number(req.params.id));
+
+  if (!court) {
+    return res.status(404).json({ error: 'Court not found' });
+  }
+
+  return res.json(court);
+});
+
 app.get('/api/bookings', (req, res) => {
   res.json(bookings);
+});
+
+app.get('/api/bookings/:id', (req, res) => {
+  const booking = bookings.find((item) => item.id === Number(req.params.id));
+
+  if (!booking) {
+    return res.status(404).json({ error: 'Booking not found' });
+  }
+
+  return res.json(booking);
 });
 
 app.post('/api/bookings', (req, res) => {
@@ -42,17 +53,28 @@ app.post('/api/bookings', (req, res) => {
     return res.status(404).json({ error: 'Court not found' });
   }
 
+  const duplicate = bookings.some(
+    (booking) =>
+      Number(booking.courtId) === Number(courtId) &&
+      booking.date === date &&
+      booking.slot === slot
+  );
+
+  if (duplicate) {
+    return res.status(409).json({ error: 'This slot is already booked' });
+  }
+
   const newBooking = {
     id: Date.now(),
     courtId: Number(courtId),
+    courtName: court.name,
     playerName,
     date,
     slot,
-    courtName: court.name
+    status: 'confirmed'
   };
 
   bookings.push(newBooking);
-
   return res.status(201).json(newBooking);
 });
 

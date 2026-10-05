@@ -1,76 +1,94 @@
 # Futsal Reservation App
 
-A full-stack app for booking futsal courts from both web and mobile interfaces, powered by a Node.js API.
+A full-stack app for booking futsal courts from both web and mobile apps, using a Node.js backend.
 
-## Features
+## Overview
 
-- View available futsal courts
-- Reserve a time slot
-- Manage bookings
-- Mobile-friendly responsive web app
-- React Native app for iOS/Android
-- Simple backend API with in-memory data storage
+This project includes:
 
-## Tech stack
+- Backend API with Express
+- Responsive React web app
+- React Native mobile app for iOS and Android
+- Court listing and booking flow
+- Booking validation and availability checks
 
-- Backend: Node.js + Express
+## Stack
+
+- Backend: Node.js, Express
 - Web: React + Vite
 - Mobile: React Native + Expo
-- Shared concept: REST API contract and booking model
+- Data: in-memory JSON-style sample data for initial development
 
 ## Project structure
 
 ```text
-.
-├── apps
-│   ├── mobile
-│   ├── server
-│   └── web
-├── README.md
-├── package.json
-└── .gitignore
+apps/
+  server/
+    src/
+      data.js
+      index.js
+  web/
+    src/
+      App.jsx
+      styles.css
+    index.html
+    package.json
+    vite.config.js
+  mobile/
+    App.js
+    app.json
+    package.json
 ```
 
-## Getting started
+## Setup
 
-1. Install dependencies:
+From the repo root:
 
 ```bash
 npm install
 ```
 
-2. Start the API server:
+Start the backend:
 
 ```bash
 npm run dev:server
 ```
 
-3. Start the web app:
+Start the web app:
 
 ```bash
 npm run dev:web
 ```
 
-4. Start the mobile app:
+Start the mobile app:
 
 ```bash
 npm run dev:mobile
 ```
 
-## API endpoints
+## Example API endpoints
 
 - GET `/api/health`
 - GET `/api/courts`
+- GET `/api/courts/:id`
 - GET `/api/bookings`
 - POST `/api/bookings`
 
-## Notes
+## Example booking payload
 
-This is the initial app scaffold and can be extended with:
+```json
+{
+  "courtId": 1,
+  "playerName": "Aisha",
+  "date": "2026-10-06",
+  "slot": "18:00"
+}
+```
 
-- User authentication
-- Payment integration
-- Admin dashboard
-- Database (MongoDB/PostgreSQL)
-- Push notifications
-- Real-time availability updates
+## Roadmap
+
+- Add user auth and roles
+- Add database persistence with MongoDB/PostgreSQL
+- Add payment flow
+- Add admin dashboard
+- Add notifications and real-time availability
