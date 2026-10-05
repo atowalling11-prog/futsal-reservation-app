@@ -1,0 +1,13 @@
+node_modules
+.env
+.DS_Store
+npm-debug.log*
+
+# Build outputs
+apps/web/dist
+apps/mobile/.expo
+apps/mobile/dist
+apps/mobile/web-build
+
+# Editor settings
+.vscode

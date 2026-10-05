@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "Futsal Reservation",
+    "slug": "futsal-reservation",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}

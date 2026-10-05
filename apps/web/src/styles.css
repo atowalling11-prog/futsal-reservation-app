@@ -1,0 +1,145 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #071b2f, #0f3252);
+  color: #f0f6ff;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.app-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 18px 64px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #7dd3fc;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 22px;
+}
+
+.panel {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.25);
+}
+
+.court-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.court-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(125, 211, 252, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.court-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: #bfdbfe;
+}
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.booking-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #dbeafe;
+}
+
+.booking-form input,
+.booking-form select {
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.9);
+  color: #fff;
+  padding: 12px 14px;
+}
+
+.booking-form button {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.lower-panel {
+  margin-top: 24px;
+}
+
+.booking-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.booking-list li {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 0.8fr;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(15, 118, 110, 0.18);
+  border-radius: 10px;
+}
+
+@media (max-width: 800px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .court-card,
+  .booking-list li {
+    grid-template-columns: 1fr;
+    display: block;
+  }
+}
